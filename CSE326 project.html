@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare Plus - Comprehensive Pet Care & Clinic Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #printable-invoice, #printable-invoice * { visibility: visible; }
+            #printable-invoice { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                    <div class="bg-teal-600 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-paw text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold text-slate-900 tracking-tight">PetCare<span class="text-teal-600">Plus</span></span>
+                        <span class="text-xs block text-slate-400 font-medium">Care & Clinic Manager</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-teal-600 bg-teal-50">
+                        <i class="fa-solid fa-chart-pie mr-1.5"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('pets')" id="nav-pets" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-teal-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-dog mr-1.5"></i> Pet Profiles
+                    </button>
+                    <button onclick="switchTab('providers')" id="nav-providers" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-teal-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-user-doctor mr-1.5"></i> Providers
+                    </button>
+                    <button onclick="switchTab('book')" id="nav-book" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-teal-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-calendar-plus mr-1.5"></i> Book Visit
+                    </button>
+                    <button onclick="switchTab('appointments')" id="nav-appointments" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-teal-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-clock-rotate-left mr-1.5"></i> Appointments
+                    </button>
+                    <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-slate-600 hover:text-teal-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-hospital-user mr-1.5"></i> Clinic Desk
+                    </button>
+                </nav>
+
+                <!-- Role Selector -->
+                <div class="flex items-center space-x-2">
+                    <div class="bg-slate-100 p-1 rounded-xl flex items-center border border-slate-200">
+                        <button onclick="setRole('owner')" id="role-owner-btn" class="px-3 py-1 text-xs font-bold rounded-lg transition bg-white text-slate-800 shadow-sm">
+                            <i class="fa-solid fa-user mr-1"></i> Owner
+                        </button>
+                        <button onclick="setRole('admin')" id="role-admin-btn" class="px-3 py-1 text-xs font-bold rounded-lg transition text-slate-500 hover:text-slate-800">
+                            <i class="fa-solid fa-stethoscope mr-1"></i> Clinic Staff
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Scroll -->
+        <div class="md:hidden flex overflow-x-auto px-4 py-2 border-t border-slate-200 space-x-2 bg-slate-50">
+            <button onclick="switchTab('dashboard')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-teal-600 text-white">Dashboard</button>
+            <button onclick="switchTab('pets')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-white text-slate-700 border">Pets</button>
+            <button onclick="switchTab('providers')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-white text-slate-700 border">Providers</button>
+            <button onclick="switchTab('book')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-white text-slate-700 border">Book</button>
+            <button onclick="switchTab('appointments')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-white text-slate-700 border">History</button>
+            <button onclick="switchTab('admin')" class="text-xs px-3 py-1.5 font-medium rounded-md whitespace-nowrap bg-white text-slate-700 border">Clinic Desk</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Role Indicator Banner -->
+        <div id="role-banner" class="hidden mb-6 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-lg flex justify-between items-center text-xs text-amber-800">
+            <span><i class="fa-solid fa-shield-cat mr-1 text-amber-600 font-bold"></i> <strong>Clinic Operations Mode</strong>: You are viewing incoming clinic schedules, approvals, and medical logs.</span>
+            <button onclick="setRole('owner')" class="underline hover:text-amber-900 font-semibold">Switch to Pet Owner View</button>
+        </div>
+
+        <!-- ================= SECTION 1: DASHBOARD ================= -->
+        <section id="section-dashboard" class="space-y-6">
+            <!-- Metrics Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">My Pets</p>
+                        <h3 id="stat-pets-count" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-paw"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Upcoming Visits</p>
+                        <h3 id="stat-upcoming-count" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Providers</p>
+                        <h3 id="stat-providers-count" class="text-2xl font-bold text-slate-800 mt-1">4</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Completed Visits</p>
+                        <h3 id="stat-completed-count" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-violet-50 text-violet-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spotlight Card & Fast Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left: Next Appointment Preview -->
+                <div class="lg:col-span-2 bg-gradient-to-r from-teal-700 to-teal-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden flex flex-col justify-between">
+                    <div class="relative z-10">
+                        <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold tracking-wide uppercase mb-3 backdrop-blur-sm">
+                            Next Scheduled Appointment
+                        </span>
+                        <div id="spotlight-content">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+                    <div class="mt-6 flex flex-wrap gap-3 z-10" id="spotlight-actions">
+                        <!-- Populated via JS -->
+                    </div>
+                    <!-- Decorative watermarks -->
+                    <i class="fa-solid fa-shield-heart absolute -right-6 -bottom-6 text-9xl text-white/5 pointer-events-none"></i>
+                </div>
+
+                <!-- Right: Quick Health Checklist & Actions -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm">
+                    <div>
+                        <h4 class="text-base font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-bell text-teal-600 mr-2"></i> Care Reminders
+                        </h4>
+                        <ul class="mt-4 space-y-3 text-sm text-slate-600" id="dashboard-reminders-list">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-syringe text-teal-500 mt-1 mr-2.5"></i>
+                                <span>Check annual rabies booster status before boarding.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-file-medical text-amber-500 mt-1 mr-2.5"></i>
+                                <span>Complete intake allergy forms prior to surgery or teeth cleaning.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-id-card text-blue-500 mt-1 mr-2.5"></i>
+                                <span>Verify microchip records are synced with your local registry.</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex gap-2">
+                        <button onclick="switchTab('book')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition text-center">
+                            Book Service
+                        </button>
+                        <button onclick="openModal('addPetModal')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl text-xs transition text-center">
+                            + Add Pet
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: PET PROFILES ================= -->
+        <section id="section-pets" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Pet Profiles</h2>
+                    <p class="text-sm text-slate-500">Manage health records, breeds, weight, microchips, and histories.</p>
+                </div>
+                <button onclick="openModal('addPetModal')" class="inline-flex items-center justify-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-semibold shadow-sm transition">
+                    <i class="fa-solid fa-plus mr-2"></i> Register New Pet
+                </button>
+            </div>
+
+            <!-- Pet Cards Grid -->
+            <div id="pets-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: PROVIDERS DIRECTORY ================= -->
+        <section id="section-providers" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Specialist Directory</h2>
+                    <p class="text-sm text-slate-500">Verified veterinarians, certified trainers, and pet wellness stylists.</p>
+                </div>
+                <!-- Filter category -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Filter:</span>
+                    <select id="provider-category-filter" onchange="renderProviders()" class="text-xs border border-slate-300 rounded-lg p-2 bg-white font-medium text-slate-700">
+                        <option value="ALL">All Categories</option>
+                        <option value="Veterinary Medicine">Veterinary Medicine</option>
+                        <option value="Pet Grooming & Spa">Grooming & Spa</option>
+                        <option value="Behavioral Training">Behavioral Training</option>
+                        <option value="Pet Boarding & Hotel">Boarding & Hotel</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Provider Cards Grid -->
+            <div id="providers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: BOOKING WORKFLOW ================= -->
+        <section id="section-book" class="hidden max-w-4xl mx-auto space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-slate-900">Schedule an Appointment</h2>
+                <p class="text-sm text-slate-500 mt-1">Select your pet, specialist, and preferred time slot.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <form id="booking-form" onsubmit="handleAppointmentBooking(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Pet Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Select Pet *</label>
+                            <select id="book-pet" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 bg-white">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Service Category -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Select Service *</label>
+                            <select id="book-service" required onchange="onServiceChanged()" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 bg-white">
+                                <option value="Veterinary Examination" data-cost="50">Comprehensive Health Checkup ($50)</option>
+                                <option value="Rabies & Core Vaccinations" data-cost="40">Core Vaccinations Booster ($40)</option>
+                                <option value="Full Grooming & Hydrobath" data-cost="65">Full Grooming & Hydrobath ($65)</option>
+                                <option value="Dental Ultrasonic Cleaning" data-cost="90">Dental Scaling & Polish ($90)</option>
+                                <option value="Obedience Training Session" data-cost="55">Obedience Training 1-on-1 ($55)</option>
+                                <option value="Luxury Overnight Boarding" data-cost="45">Boarding (Nightly) ($45)</option>
+                            </select>
+                        </div>
+
+                        <!-- Provider Selection -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Select Specialist *</label>
+                            <select id="book-provider" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 bg-white">
+                                <!-- Populated dynamically based on services -->
+                            </select>
+                        </div>
+
+                        <!-- Date -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Appointment Date *</label>
+                            <input type="date" id="book-date" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500">
+                        </div>
+
+                        <!-- Time Slot -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Preferred Time Slot *</label>
+                            <select id="book-time" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 bg-white">
+                                <option value="09:00 AM">09:00 AM</option>
+                                <option value="10:30 AM">10:30 AM</option>
+                                <option value="11:45 AM">11:45 AM</option>
+                                <option value="02:00 PM">02:00 PM</option>
+                                <option value="03:30 PM">03:30 PM</option>
+                                <option value="05:00 PM">05:00 PM</option>
+                            </select>
+                        </div>
+
+                        <!-- Special Instructions -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Chief Symptoms / Pet Notes</label>
+                            <input type="text" id="book-notes" placeholder="e.g., Sensitive ears, dietary allergies, nervous around clippers" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500">
+                        </div>
+                    </div>
+
+                    <!-- Live Cost Breakdown Summary -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <div class="flex justify-between items-center text-sm mb-1">
+                            <span class="text-slate-500">Service Fee:</span>
+                            <span id="summary-service-fee" class="font-medium text-slate-800">$50.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm mb-2">
+                            <span class="text-slate-500">Clinic Facility & Sanitation:</span>
+                            <span class="font-medium text-slate-800">$5.00</span>
+                        </div>
+                        <div class="border-t border-slate-200 pt-2 flex justify-between items-center font-bold text-base text-slate-900">
+                            <span>Estimated Total:</span>
+                            <span id="summary-total" class="text-teal-600">$55.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-md transition flex items-center justify-center">
+                        <i class="fa-solid fa-check-circle mr-2"></i> Confirm & Book Appointment
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: APPOINTMENTS HISTORY ================= -->
+        <section id="section-appointments" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Appointment History</h2>
+                    <p class="text-sm text-slate-500">Review, print invoices, and sync visits with your personal calendar.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Status:</span>
+                    <select id="appointment-filter-status" onchange="renderAppointments()" class="text-xs border border-slate-300 rounded-lg p-2 bg-white font-medium text-slate-700">
+                        <option value="ALL">All Records</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Appointments List / Cards -->
+            <div id="appointments-container" class="space-y-4">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 6: CLINIC DESK / ADMIN PORTAL ================= -->
+        <section id="section-admin" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-hospital-user text-teal-600 mr-2"></i> Clinic Desk & Operations Console
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Accept bookings, update treatment records, or mark services as completed.</p>
+                    </div>
+                    <span class="px-3 py-1 bg-teal-100 text-teal-800 text-xs font-bold rounded-full w-fit">Live Staff Mode</span>
+                </div>
+
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-50 text-xs uppercase text-slate-400 font-semibold">
+                            <tr>
+                                <th class="p-3">Visit ID</th>
+                                <th class="p-3">Pet Name</th>
+                                <th class="p-3">Service</th>
+                                <th class="p-3">Provider</th>
+                                <th class="p-3">Date / Time</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-center">Clinic Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-appointments-tbody" class="divide-y divide-slate-100 font-normal">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 mt-auto">
+        <p>PetCare Plus Enterprise &copy; 2026. Built with Vanilla HTML, Tailwind CSS, &amp; Vanilla JavaScript.</p>
+    </footer>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal 1: Add Pet -->
+    <div id="addPetModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-paw text-teal-600 mr-1.5"></i> Add New Pet</h3>
+                <button onclick="closeModal('addPetModal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+            <form onsubmit="handleNewPetSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Pet Name *</label>
+                    <input type="text" id="newpet-name" required placeholder="e.g., Milo" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Species *</label>
+                        <select id="newpet-species" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500 bg-white">
+                            <option value="Dog">Dog</option>
+                            <option value="Cat">Cat</option>
+                            <option value="Rabbit">Rabbit</option>
+                            <option value="Bird">Bird</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Breed</label>
+                        <input type="text" id="newpet-breed" placeholder="e.g., Beagle" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Age (Years)</label>
+                        <input type="number" id="newpet-age" min="0" max="35" placeholder="e.g., 3" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Weight (kg)</label>
+                        <input type="number" id="newpet-weight" step="0.1" placeholder="e.g., 12.5" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Microchip ID</label>
+                    <input type="text" id="newpet-chip" placeholder="985141002348123" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Allergies / Special Medical Notes</label>
+                    <input type="text" id="newpet-allergies" placeholder="e.g., Chicken protein sensitivity, penicillin" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-teal-500">
+                </div>
+                <div class="flex justify-end space-x-2 pt-3 border-t">
+                    <button type="button" onclick="closeModal('addPetModal')" class="px-4 py-2 border rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700">Save Pet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Medical History Log per Pet -->
+    <div id="medicalModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800" id="medicalModalTitle">Pet Clinical History</h3>
+                <button onclick="closeModal('medicalModal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+            <div id="medicalRecordsContainer" class="max-h-80 overflow-y-auto space-y-3 pr-1 text-sm text-slate-600">
+                <!-- Dynamically Populated -->
+            </div>
+            <div class="text-right border-t pt-3">
+                <button onclick="closeModal('medicalModal')" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-700">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Printable Invoice & Receipt -->
+    <div id="invoiceModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div id="printable-invoice" class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
+                <div class="flex justify-between items-start border-b pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-teal-700">PetCare Plus Clinic</h2>
+                        <p class="text-xs text-slate-500">Automated Patient Service Receipt</p>
+                    </div>
+                    <span id="invoice-status" class="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">Paid & Verified</span>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-2 text-xs text-slate-600">
+                    <div><strong>Booking ID:</strong> <span id="inv-id"></span></div>
+                    <div><strong>Date:</strong> <span id="inv-date"></span></div>
+                    <div><strong>Pet:</strong> <span id="inv-pet"></span></div>
+                    <div><strong>Specialist:</strong> <span id="inv-provider"></span></div>
+                </div>
+                <div class="mt-4 border-t border-slate-200 pt-3">
+                    <div class="flex justify-between text-xs py-1">
+                        <span id="inv-service-name">Service</span>
+                        <span id="inv-service-cost">$0.00</span>
+                    </div>
+                    <div class="flex justify-between text-xs py-1 text-slate-500">
+                        <span>Clinic Facility & Sanitize Fee</span>
+                        <span>$5.00</span>
+                    </div>
+                    <div class="flex justify-between text-sm font-bold border-t border-slate-200 pt-2 mt-2 text-slate-900">
+                        <span>Total Paid:</span>
+                        <span id="inv-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeModal('invoiceModal')" class="px-4 py-2 border rounded-lg text-xs font-medium text-slate-600">Close</button>
+                <button onclick="window.print()" class="px-4 py-2 bg-teal-600 text-white rounded-lg text-xs font-semibold hover:bg-teal-700">
+                    <i class="fa-solid fa-print mr-1"></i> Print Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl transform translate-y-24 transition-transform duration-300 flex items-center space-x-3 text-sm">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message">Message text</span>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Default Mock Datasets
+        const INITIAL_PETS = [
+            { id: "P1", name: "Cooper", species: "Dog", breed: "Golden Retriever", age: 3, weight: 28, chip: "985141002348123", allergies: "None reported" },
+            { id: "P2", name: "Luna", species: "Cat", breed: "Siamese", age: 2, weight: 4.2, chip: "985141009876541", allergies: "Sensitive stomach (grain-free)" }
+        ];
+
+        const INITIAL_PROVIDERS = [
+            { id: "PR1", name: "Dr. Sarah Jenkins, DVM", role: "Veterinarian", category: "Veterinary Medicine", rating: 4.9, reviews: 142, experience: "12 yrs exp", fee: 50, services: ["Veterinary Examination", "Rabies & Core Vaccinations", "Dental Ultrasonic Cleaning"] },
+            { id: "PR2", name: "Marcus Vance", role: "Master Groomer", category: "Pet Grooming & Spa", rating: 4.8, reviews: 89, experience: "8 yrs exp", fee: 65, services: ["Full Grooming & Hydrobath"] },
+            { id: "PR3", name: "Elena Rostova", role: "Behaviorist & Trainer", category: "Behavioral Training", rating: 5.0, reviews: 64, experience: "9 yrs exp", fee: 55, services: ["Obedience Training Session"] },
+            { id: "PR4", name: "Greenwood Retreat Staff", role: "Facility Manager", category: "Pet Boarding & Hotel", rating: 4.7, reviews: 110, experience: "24/7 Monitored", fee: 45, services: ["Luxury Overnight Boarding"] }
+        ];
+
+        const INITIAL_APPOINTMENTS = [
+            {
+                id: "APT-1001",
+                petId: "P1",
+                petName: "Cooper",
+                service: "Veterinary Examination",
+                providerId: "PR1",
+                providerName: "Dr. Sarah Jenkins, DVM",
+                date: "2026-11-15",
+                time: "10:30 AM",
+                notes: "Routine semi-annual checkup",
+                cost: 55,
+                status: "Confirmed"
+            },
+            {
+                id: "APT-0992",
+                petId: "P2",
+                petName: "Luna",
+                service: "Full Grooming & Hydrobath",
+                providerId: "PR2",
+                providerName: "Marcus Vance",
+                date: "2026-10-20",
+                time: "02:00 PM",
+                notes: "De-shedding package and nail trim",
+                cost: 70,
+                status: "Completed"
+            }
+        ];
+
+        // State Manager with LocalStorage Persistence
+        let pets = JSON.parse(localStorage.getItem('petcare_pets')) || INITIAL_PETS;
+        let appointments = JSON.parse(localStorage.getItem('petcare_appointments')) || INITIAL_APPOINTMENTS;
+        let providers = INITIAL_PROVIDERS;
+        let currentRole = 'owner'; // 'owner' or 'admin'
+
+        function saveToStorage() {
+            localStorage.setItem('petcare_pets', JSON.stringify(pets));
+            localStorage.setItem('petcare_appointments', JSON.stringify(appointments));
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default booking date as tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateInput = document.getElementById('book-date');
+            if (dateInput) {
+                dateInput.value = tomorrow.toISOString().split('T')[0];
+                dateInput.min = new Date().toISOString().split('T')[0];
+            }
+
+            renderDashboard();
+            renderPets();
+            renderProviders();
+            populateBookingOptions();
+            renderAppointments();
+            renderAdminDesk();
+        });
+
+        // Tab Navigation Switcher
+        function switchTab(tabId) {
+            const sections = ['dashboard', 'pets', 'providers', 'book', 'appointments', 'admin'];
+            sections.forEach(sec => {
+                const el = document.getElementById(`section-${sec}`);
+                const btn = document.getElementById(`nav-${sec}`);
+                if (el) el.classList.add('hidden');
+                if (btn) {
+                    btn.classList.remove('text-teal-600', 'bg-teal-50');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            const activeSection = document.getElementById(`section-${tabId}`);
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeSection) activeSection.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.classList.add('text-teal-600', 'bg-teal-50');
+                activeBtn.classList.remove('text-slate-600');
+            }
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'appointments') renderAppointments();
+            if (tabId === 'admin') renderAdminDesk();
+            if (tabId === 'book') populateBookingOptions();
+        }
+
+        // Toggle Roles (Owner vs Staff)
+        function setRole(role) {
+            currentRole = role;
+            const ownerBtn = document.getElementById('role-owner-btn');
+            const adminBtn = document.getElementById('role-admin-btn');
+            const banner = document.getElementById('role-banner');
+
+            if (role === 'admin') {
+                adminBtn.className = "px-3 py-1 text-xs font-bold rounded-lg transition bg-teal-600 text-white shadow-sm";
+                ownerBtn.className = "px-3 py-1 text-xs font-bold rounded-lg transition text-slate-500 hover:text-slate-800";
+                banner.classList.remove('hidden');
+                switchTab('admin');
+            } else {
+                ownerBtn.className = "px-3 py-1 text-xs font-bold rounded-lg transition bg-white text-slate-800 shadow-sm";
+                adminBtn.className = "px-3 py-1 text-xs font-bold rounded-lg transition text-slate-500 hover:text-slate-800";
+                banner.classList.add('hidden');
+                switchTab('dashboard');
+            }
+            showToast(`Switched view to: ${role === 'admin' ? 'Clinic Staff Desk' : 'Pet Owner View'}`);
+        }
+
+        // Toast Messages
+        function showToast(msg, iconClass = "fa-circle-check text-teal-400") {
+            const toast = document.getElementById('toast-notification');
+            const message = document.getElementById('toast-message');
+            const icon = document.getElementById('toast-icon');
+
+            message.textContent = msg;
+            icon.className = `fa-solid ${iconClass}`;
+
+            toast.classList.remove('translate-y-24');
+            toast.classList.add('translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-24');
+                toast.classList.remove('translate-y-0');
+            }, 3200);
+        }
+
+        // Render Dashboard Metrics & Spotlight Card
+        function renderDashboard() {
+            document.getElementById('stat-pets-count').innerText = pets.length;
+            const upcoming = appointments.filter(a => a.status === 'Confirmed');
+            document.getElementById('stat-upcoming-count').innerText = upcoming.length;
+            const completed = appointments.filter(a => a.status === 'Completed');
+            document.getElementById('stat-completed-count').innerText = completed.length;
+            document.getElementById('stat-providers-count').innerText = providers.length;
+
+            const spotlight = document.getElementById('spotlight-content');
+            const actions = document.getElementById('spotlight-actions');
+
+            if (upcoming.length > 0) {
+                const next = upcoming[0];
+                spotlight.innerHTML = `
+                    <h3 class="text-2xl font-bold">${next.service} for ${next.petName}</h3>
+                    <p class="text-teal-100 text-sm mt-1">
+                        <i class="fa-solid fa-user-doctor mr-1"></i> ${next.providerName} &bull; 
+                        <i class="fa-regular fa-calendar ml-2 mr-1"></i> ${next.date} at ${next.time}
+                    </p>
+                    <p class="text-xs text-teal-200 mt-2 italic bg-black/10 p-2 rounded-lg inline-block">
+                        Notes: ${next.notes || 'No special notes entered.'}
+                    </p>
+                `;
+                actions.innerHTML = `
+                    <button onclick="downloadCalendarEvent('${next.id}')" class="bg-white text-teal-800 hover:bg-teal-50 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center shadow-sm">
+                        <i class="fa-solid fa-calendar-arrow-down mr-1.5"></i> Export to Calendar (.ics)
+                    </button>
+                    <button onclick="switchTab('appointments')" class="bg-teal-800/80 hover:bg-teal-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition border border-white/20">
+                        View Details
+                    </button>
+                `;
+            } else {
+                spotlight.innerHTML = `
+                    <h3 class="text-xl font-bold">No Upcoming Appointments</h3>
+                    <p class="text-teal-100 text-sm mt-1">Keep your pet healthy with regular veterinary checkups and grooming sessions.</p>
+                `;
+                actions.innerHTML = `
+                    <button onclick="switchTab('book')" class="bg-white text-teal-800 hover:bg-teal-50 px-4 py-2 rounded-xl text-xs font-bold transition">
+                        Schedule a Visit
+                    </button>
+                `;
+            }
+        }
+
+        // Render Pet Profile Cards
+        function renderPets() {
+            const grid = document.getElementById('pets-grid');
+            grid.innerHTML = '';
+
+            pets.forEach(pet => {
+                const icon = pet.species.toLowerCase() === 'cat' ? 'fa-cat' : (pet.species.toLowerCase() === 'dog' ? 'fa-dog' : 'fa-paw');
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
+                                    <i class="fa-solid ${icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-base leading-snug">${pet.name}</h3>
+                                    <span class="text-xs text-slate-400 font-medium">${pet.species} &bull; ${pet.breed || 'Standard'}</span>
+                                </div>
+                            </div>
+                            <button onclick="deletePet('${pet.id}')" title="Delete Profile" class="text-slate-300 hover:text-rose-500 text-sm">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <div><strong>Age:</strong> ${pet.age ? pet.age + ' yrs' : 'N/A'}</div>
+                            <div><strong>Weight:</strong> ${pet.weight ? pet.weight + ' kg' : 'N/A'}</div>
+                            <div class="col-span-2 truncate"><strong>Chip:</strong> ${pet.chip || 'Unregistered'}</div>
+                        </div>
+
+                        <div class="mt-3 text-xs text-slate-500">
+                            <strong class="text-slate-700">Allergies/Alerts:</strong> ${pet.allergies || 'None'}
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-3 border-t border-slate-100 flex gap-2">
+                        <button onclick="viewPetMedicalHistory('${pet.id}')" class="w-full text-xs font-semibold py-2 px-3 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center justify-center">
+                            <i class="fa-solid fa-file-waveform mr-1.5 text-teal-600"></i> Records
+                        </button>
+                        <button onclick="prefillBookingForPet('${pet.id}')" class="w-full text-xs font-semibold py-2 px-3 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 flex items-center justify-center">
+                            <i class="fa-solid fa-calendar-check mr-1.5"></i> Book Visit
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render Providers Directory
+        function renderProviders() {
+            const filter = document.getElementById('provider-category-filter').value;
+            const grid = document.getElementById('providers-grid');
+            grid.innerHTML = '';
+
+            const list = filter === 'ALL' ? providers : providers.filter(p => p.category === filter);
+
+            list.forEach(prov => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-11 h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-stethoscope text-teal-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm leading-tight">${prov.name}</h4>
+                                <span class="text-xs text-slate-400 font-medium">${prov.role}</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 flex items-center space-x-2 text-xs">
+                            <span class="bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded flex items-center">
+                                <i class="fa-solid fa-star text-amber-500 mr-1 text-[10px]"></i> ${prov.rating}
+                            </span>
+                            <span class="text-slate-400">(${prov.reviews} reviews)</span>
+                        </div>
+
+                        <p class="text-xs text-slate-500 mt-2"><strong>Experience:</strong> ${prov.experience}</p>
+                        
+                        <div class="mt-3 flex flex-wrap gap-1">
+                            ${prov.services.map(s => `<span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">${s}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-400 uppercase block">Starting at</span>
+                            <span class="text-base font-bold text-slate-800">$${prov.fee}</span>
+                        </div>
+                        <button onclick="bookDirectProvider('${prov.id}')" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold py-2 px-3 rounded-lg transition">
+                            Book with Dr.
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Fill Booking Dropdowns dynamically
+        function populateBookingOptions() {
+            const petSelect = document.getElementById('book-pet');
+            petSelect.innerHTML = '';
+            pets.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} (${p.species} - ${p.breed || 'Common'})`;
+                petSelect.appendChild(opt);
+            });
+
+            onServiceChanged();
+        }
+
+        // Update Providers dropdown based on selected Service
+        function onServiceChanged() {
+            const serviceSelect = document.getElementById('book-service');
+            const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+            const serviceName = selectedOption.value;
+            const cost = parseInt(selectedOption.getAttribute('data-cost')) || 50;
+
+            // Recalculate summary totals
+            document.getElementById('summary-service-fee').innerText = `$${cost}.00`;
+            document.getElementById('summary-total').innerText = `$${cost + 5}.00`;
+
+            const providerSelect = document.getElementById('book-provider');
+            providerSelect.innerHTML = '';
+
+            const matchedProviders = providers.filter(p => p.services.includes(serviceName));
+            const listToUse = matchedProviders.length > 0 ? matchedProviders : providers;
+
+            listToUse.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} (${p.role})`;
+                providerSelect.appendChild(opt);
+            });
+        }
+
+        // Quick Actions from other tabs to Booking
+        function prefillBookingForPet(petId) {
+            switchTab('book');
+            document.getElementById('book-pet').value = petId;
+        }
+
+        function bookDirectProvider(providerId) {
+            switchTab('book');
+            const prov = providers.find(p => p.id === providerId);
+            if (prov && prov.services.length > 0) {
+                document.getElementById('book-service').value = prov.services[0];
+                onServiceChanged();
+                document.getElementById('book-provider').value = providerId;
+            }
+        }
+
+        // Handle Appointment Booking Submit
+        function handleAppointmentBooking(event) {
+            event.preventDefault();
+            const petId = document.getElementById('book-pet').value;
+            const petObj = pets.find(p => p.id === petId);
+
+            const serviceSelect = document.getElementById('book-service');
+            const serviceName = serviceSelect.value;
+            const cost = parseInt(serviceSelect.options[serviceSelect.selectedIndex].getAttribute('data-cost')) + 5;
+
+            const providerId = document.getElementById('book-provider').value;
+            const providerObj = providers.find(p => p.id === providerId);
+
+            const date = document.getElementById('book-date').value;
+            const time = document.getElementById('book-time').value;
+            const notes = document.getElementById('book-notes').value;
+
+            const newAppointment = {
+                id: 'APT-' + Math.floor(1000 + Math.random() * 9000),
+                petId: petId,
+                petName: petObj ? petObj.name : "Pet",
+                service: serviceName,
+                providerId: providerId,
+                providerName: providerObj ? providerObj.name : "Clinic Staff",
+                date: date,
+                time: time,
+                notes: notes,
+                cost: cost,
+                status: 'Confirmed'
+            };
+
+            appointments.unshift(newAppointment);
+            saveToStorage();
+            showToast(`Appointment booked successfully for ${newAppointment.petName}!`);
+            document.getElementById('booking-form').reset();
+            populateBookingOptions();
+            switchTab('appointments');
+        }
+
+        // Render Appointments History
+        function renderAppointments() {
+            const container = document.getElementById('appointments-container');
+            const filter = document.getElementById('appointment-filter-status').value;
+            container.innerHTML = '';
+
+            const list = filter === 'ALL' ? appointments : appointments.filter(a => a.status === filter);
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-calendar-xmark text-4xl text-slate-300"></i>
+                        <p class="text-slate-500 text-sm mt-3">No matching appointments found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach(apt => {
+                const isConfirmed = apt.status === 'Confirmed';
+                const isCompleted = apt.status === 'Completed';
+                const statusBadge = isConfirmed 
+                    ? '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-check mr-1"></i> Confirmed</span>' 
+                    : (isCompleted 
+                        ? '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200"><i class="fa-solid fa-circle-check mr-1"></i> Completed</span>'
+                        : '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark mr-1"></i> Cancelled</span>');
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4";
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-mono font-bold text-slate-400">${apt.id}</span>
+                            ${statusBadge}
+                        </div>
+                        <h4 class="text-base font-bold text-slate-800">${apt.service} for <span class="text-teal-600">${apt.petName}</span></h4>
+                        <div class="flex flex-wrap gap-y-1 gap-x-4 text-xs text-slate-500">
+                            <span><i class="fa-solid fa-user-doctor mr-1"></i> ${apt.providerName}</span>
+                            <span><i class="fa-regular fa-calendar mr-1"></i> ${apt.date} at ${apt.time}</span>
+                            <span><i class="fa-solid fa-receipt mr-1"></i> Total: $${apt.cost}</span>
+                        </div>
+                        ${apt.notes ? `<p class="text-xs text-slate-400 italic">"${apt.notes}"</p>` : ''}
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        ${isConfirmed ? `
+                            <button onclick="downloadCalendarEvent('${apt.id}')" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition" title="Export .ics file">
+                                <i class="fa-solid fa-calendar-arrow-down mr-1"></i> .ICS
+                            </button>
+                            <button onclick="cancelAppointment('${apt.id}')" class="px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-semibold transition">
+                                Cancel
+                            </button>
+                        ` : ''}
+                        <button onclick="openInvoiceModal('${apt.id}')" class="px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-semibold transition">
+                            <i class="fa-solid fa-receipt mr-1"></i> Invoice
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Render Clinic Desk Table (Staff Operations)
+        function renderAdminDesk() {
+            const tbody = document.getElementById('admin-appointments-tbody');
+            tbody.innerHTML = '';
+
+            appointments.forEach(apt => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition";
+                
+                let actionButtons = `
+                    <button onclick="updateAppointmentStatus('${apt.id}', 'Completed')" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-medium mr-1">Mark Done</button>
+                    <button onclick="updateAppointmentStatus('${apt.id}', 'Cancelled')" class="text-xs bg-rose-500 hover:bg-rose-600 text-white px-2.5 py-1 rounded font-medium">Decline</button>
+                `;
+
+                if (apt.status === 'Completed') {
+                    actionButtons = `<span class="text-xs text-slate-400 font-medium italic">Record Closed</span>`;
+                } else if (apt.status === 'Cancelled') {
+                    actionButtons = `<button onclick="updateAppointmentStatus('${apt.id}', 'Confirmed')" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded font-medium">Reopen</button>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3 font-mono font-medium text-slate-700">${apt.id}</td>
+                    <td class="p-3 font-semibold text-slate-800">${apt.petName}</td>
+                    <td class="p-3">${apt.service}</td>
+                    <td class="p-3">${apt.providerName}</td>
+                    <td class="p-3 whitespace-nowrap">${apt.date} <span class="text-slate-400 text-xs">(${apt.time})</span></td>
+                    <td class="p-3 font-medium ${apt.status === 'Confirmed' ? 'text-emerald-600' : (apt.status === 'Completed' ? 'text-blue-600' : 'text-rose-500')}">${apt.status}</td>
+                    <td class="p-3 text-center">${actionButtons}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Update Appointment Status from Clinic Console
+        function updateAppointmentStatus(id, newStatus) {
+            const item = appointments.find(a => a.id === id);
+            if (item) {
+                item.status = newStatus;
+                saveToStorage();
+                renderAppointments();
+                renderAdminDesk();
+                renderDashboard();
+                showToast(`Appointment ${id} set to ${newStatus}`);
+            }
+        }
+
+        function cancelAppointment(id) {
+            if (confirm("Are you sure you want to cancel this appointment?")) {
+                updateAppointmentStatus(id, 'Cancelled');
+            }
+        }
+
+        // Add Pet Handler
+        function handleNewPetSubmit(event) {
+            event.preventDefault();
+            const newPet = {
+                id: 'P' + (pets.length + 1),
+                name: document.getElementById('newpet-name').value,
+                species: document.getElementById('newpet-species').value,
+                breed: document.getElementById('newpet-breed').value || 'Standard',
+                age: document.getElementById('newpet-age').value || 1,
+                weight: document.getElementById('newpet-weight').value || 5,
+                chip: document.getElementById('newpet-chip').value || 'Unregistered',
+                allergies: document.getElementById('newpet-allergies').value || 'None reported'
+            };
+
+            pets.push(newPet);
+            saveToStorage();
+            closeModal('addPetModal');
+            showToast(`${newPet.name} registered successfully!`);
+            renderPets();
+            renderDashboard();
+            populateBookingOptions();
+            event.target.reset();
+        }
+
+        function deletePet(id) {
+            if (confirm("Remove this pet and its historical profile?")) {
+                pets = pets.filter(p => p.id !== id);
+                saveToStorage();
+                renderPets();
+                renderDashboard();
+                populateBookingOptions();
+                showToast("Pet removed from registry.");
+            }
+        }
+
+        // View Pet Medical History Modal
+        function viewPetMedicalHistory(petId) {
+            const pet = pets.find(p => p.id === petId);
+            if (!pet) return;
+
+            document.getElementById('medicalModalTitle').innerText = `${pet.name}'s Medical Chart`;
+            const container = document.getElementById('medicalRecordsContainer');
+            
+            const petVisits = appointments.filter(a => a.petId === petId);
+
+            if (petVisits.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 text-center text-slate-400 bg-slate-50 rounded-xl">
+                        No previous medical records or visit notes recorded for ${pet.name}.
+                    </div>
+                `;
+            } else {
+                container.innerHTML = petVisits.map(v => `
+                    <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+                        <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
+                            <span>${v.service}</span>
+                            <span class="text-slate-400">${v.date}</span>
+                        </div>
+                        <p class="text-xs text-slate-500"><strong>Attending:</strong> ${v.providerName}</p>
+                        <p class="text-xs text-slate-500 mt-1"><strong>Doctor Notes:</strong> ${v.notes || 'Routine checkup, vital signs normal.'}</p>
+                    </div>
+                `).join('');
+            }
+
+            openModal('medicalModal');
+        }
+
+        // Invoice Receipt Modal
+        function openInvoiceModal(appointmentId) {
+            const apt = appointments.find(a => a.id === appointmentId);
+            if (!apt) return;
+
+            document.getElementById('inv-id').innerText = apt.id;
+            document.getElementById('inv-date').innerText = `${apt.date} (${apt.time})`;
+            document.getElementById('inv-pet').innerText = apt.petName;
+            document.getElementById('inv-provider').innerText = apt.providerName;
+            document.getElementById('inv-service-name').innerText = apt.service;
+            document.getElementById('inv-service-cost').innerText = `$${apt.cost - 5}.00`;
+            document.getElementById('inv-total').innerText = `$${apt.cost}.00`;
+
+            const status = document.getElementById('invoice-status');
+            status.innerText = apt.status;
+            status.className = apt.status === 'Completed' 
+                ? 'px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800'
+                : 'px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800';
+
+            openModal('invoiceModal');
+        }
+
+        // iCalendar (.ics) File Generator & Downloader
+        function downloadCalendarEvent(appointmentId) {
+            const apt = appointments.find(a => a.id === appointmentId);
+            if (!apt) return;
+
+            const dateStr = apt.date.replace(/-/g, '');
+            const icsContent = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//PetCare Plus//Appointment Scheduler//EN
+BEGIN:VEVENT
+UID:${apt.id}@petcareplus.com
+DTSTAMP:${dateStr}T090000Z
+DTSTART:${dateStr}T100000Z
+DTEND:${dateStr}T110000Z
+SUMMARY:${apt.service} for ${apt.petName}
+DESCRIPTION:Specialist: ${apt.providerName}. Instructions: ${apt.notes || 'None'}
+LOCATION:PetCare Plus Central Clinic
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', `${apt.petName}_Appointment_${apt.id}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Calendar event (.ics) downloaded!");
+        }
+
+        // Modal Controls
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
